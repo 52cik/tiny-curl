@@ -1,6 +1,6 @@
 {
   "name": "tiny-curl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A tiny CURL wrapper for node",
   "main": "index.js",
   "scripts": {
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/52cik/tiny-curl/issues"
   },
-  "homepage": "https://github.com/52cik/tiny-curl#readme"
+  "homepage": "https://github.com/52cik/tiny-curl#readme",
+  "dependencies": {
+    "qs": "^6.3.0"
+  }
 }
