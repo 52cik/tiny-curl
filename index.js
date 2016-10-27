@@ -37,6 +37,10 @@ function curl(url, data, cb) {
     res.on('end', _ => cb(Buffer.concat(data)))
   })
 
+  req.on('error', (e) => {
+    console.log(`problem with request: ${e.message}`)
+  })
+
   req.write(data)
   req.end()
 
