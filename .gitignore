@@ -2,9 +2,11 @@
 logs
 *.log
 npm-debug.log*
+yarn.lock
 
 # Coverage directory used by tools like istanbul
 coverage
+.nyc_output
 
 # Dependency directories
 node_modules
@@ -21,6 +23,3 @@ Desktop.ini
 
 # VSCode
 .vscode
-
-# Coverage directory
-coverage
