@@ -45,13 +45,22 @@ function curl(url, opts) {
 
   if (body !== null && body !== undefined) {
     const { headers } = opts;
-    if (typeof body !== 'string') {
-      headers['content-type'] = headers['content-type'] || 'application/x-www-form-urlencoded';
-      opts.body = qs.stringify(body);
-    } else if (opts.json) {
-      headers['content-type'] = headers['content-type'] || 'application/json';
-      opts.body = JSON.stringify(body);
+    const isString = Object.prototype.toString.call(body) === '[object String]';
+
+    if (!isString) {
+      if (opts.json) {
+        headers['content-type'] = headers['content-type'] || 'application/json';
+        opts.body = JSON.stringify(body);
+      } else {
+        headers['content-type'] = headers['content-type'] || 'application/x-www-form-urlencoded';
+        opts.body = qs.stringify(body);
+      }
     }
+
+    if (headers['content-length'] === undefined && headers['transfer-encoding'] === undefined) {
+      headers['content-length'] = Buffer.byteLength(opts.body);
+    }
+
     opts.method = (opts.method || 'POST').toUpperCase();
   } else {
     opts.method = (opts.method || 'GET').toUpperCase();
@@ -60,32 +69,54 @@ function curl(url, opts) {
   return new Promise((resolve, reject) => {
     const lib = opts.protocol === 'https:' ? https : http;
     const req = lib.request(opts, (res) => {
-      const encoding = res.headers['content-encoding'];
+      let { encoding } = opts;
+      const isBuffer = encoding === 'buffer' || encoding === null;
+      const contentEncoding = res.headers['content-encoding'];
       const chunks = [];
 
-      if (encoding === undefined) {
-        res.setEncoding('utf8');
+      if (!isBuffer) {
+        encoding = encoding || 'utf8';
+        // res.setEncoding(encoding || 'utf8');
       }
 
+      // 统一回复结果
       function done(err, buffer) {
         if (err) {
           reject(err);
         } else {
-          // TODO: 二进制/文本处理
-          resolve(buffer.toString());
+          res.body = isBuffer ? buffer : buffer.toString(encoding);
+
+          if (opts.json && res.body) {
+            try {
+              res.body = JSON.parse(res.body);
+            } catch (er) {
+              reject(er);
+            }
+          }
+
+          resolve(res);
         }
       }
 
-      res.on('data', chunk => chunks.push(chunk));
+      let len = 0;
+      res.on('data', (chunk) => {
+        chunks.push(chunk);
+        len += chunk.length;
+      });
 
       res.on('end', () => {
-        const buffer = Buffer.concat(chunks);
-        if (encoding === 'gzip') {
+        if (opts.method === 'HEAD') {
+          return done(null, '');
+        }
+
+        const buffer = Buffer.concat(chunks, len);
+
+        if (contentEncoding === 'gzip') {
           zlib.gunzip(buffer, done);
-        } else if (encoding === 'deflate') {
+        } else if (contentEncoding === 'deflate') {
           zlib.inflate(buffer, done);
         } else {
-          resolve(null, buffer);
+          done(null, buffer);
         }
       });
     });
@@ -104,6 +135,7 @@ curl.defaults = {
     'user-agent': `${name}/${version}`,
     'accept-encoding': 'gzip,deflate',
   },
+  // encoding: 'utf8', // 输出编码类型
   retries: 2, // 重定向
   decompress: true, // 解压缩
 };
