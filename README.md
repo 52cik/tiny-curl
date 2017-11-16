@@ -63,16 +63,16 @@ Default: `false`
 Type: `string` `Object`
 
 
-#### got.get(url, [options])
+#### curl.get(url, [options])
 
-#### got.post(url, [options])
+#### curl.post(url, [options])
 
-#### got.put(url, [options])
+#### curl.put(url, [options])
 
-#### got.patch(url, [options])
+#### curl.patch(url, [options])
 
-#### got.head(url, [options])
+#### curl.head(url, [options])
 
-#### got.delete(url, [options])
+#### curl.delete(url, [options])
 
 Sets `options.method` to the method name and makes a request.
