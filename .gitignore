@@ -23,3 +23,9 @@ Desktop.ini
 
 # VSCode
 .vscode
+
+# independent nodejs environment
+.ine-versions
+/node
+/npm
+/npx
