@@ -22,11 +22,9 @@ test.before('setup', async () => {
 test('promise mode', async (t) => {
   t.is((await curl.get(s.url)).body, 'ok');
 
-  const err = await t.throws(curl.get(`${s.url}/404`));
-  t.is(err.response.body, 'not found');
-
-  const err2 = await t.throws(curl.get('.com', { retries: 0 }));
-  t.truthy(err2);
+  const { statusCode, body } = await curl.get(`${s.url}/404`);
+  t.is(statusCode, 404);
+  t.is(body, 'not found');
 });
 
 test.after('cleanup', async () => {
