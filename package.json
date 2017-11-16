@@ -1,16 +1,24 @@
 {
   "name": "tiny-curl",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "A tiny curl wrapper for node",
   "main": "index.js",
   "scripts": {
-    "test": "nyc ava"
+    "test": "nyc ava",
+    "test-cov": "nyc --reporter=html --reporter=text ava",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/52cik/tiny-curl.git"
   },
-  "keywords": [],
+  "keywords": [
+    "http",
+    "https",
+    "curl",
+    "fetch",
+    "request"
+  ],
   "author": "楼教主 <fe.52cik@gmail.com> (http://www.52cik.com/)",
   "license": "MIT",
   "bugs": {
@@ -27,6 +35,7 @@
     "eslint-plugin-import": "^2.8.0",
     "get-port": "^3.2.0",
     "nyc": "^11.3.0",
+    "pem": "^1.12.3",
     "pify": "^3.0.0"
   }
 }
