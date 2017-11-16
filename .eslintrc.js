@@ -5,5 +5,6 @@ module.exports = {
     indent: ['error', 2],
     'no-param-reassign': 'off',
     'no-return-assign': 'off',
+    'consistent-return': 'off',
   },
 };
