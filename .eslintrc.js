@@ -6,5 +6,6 @@ module.exports = {
     'no-param-reassign': 'off',
     'no-return-assign': 'off',
     'consistent-return': 'off',
+    'no-restricted-syntax': 'off',
   },
 };
