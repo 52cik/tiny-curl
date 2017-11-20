@@ -1,4 +1,3 @@
-const qs = require('qs');
 const zlib = require('zlib');
 const http = require('http');
 const https = require('https');
@@ -20,6 +19,44 @@ function lowercaseKeys(obj) {
 }
 
 /**
+ * Flattens the underlying C structures of a concatenated JavaScript string
+ * @see https://github.com/davidmarkclements/flatstr
+ *
+ * @param {string} s
+ */
+function flatstr(s) {
+  Number(s);
+  return s;
+}
+
+/**
+ * query string stringify
+ *
+ * @param {any} obj
+ * @param {string} prefix
+ */
+function queryStringify(obj, prefix) {
+  const pairs = [];
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = obj[key];
+      const enkey = encodeURIComponent(key);
+      let pair;
+
+      if (typeof value === 'object') {
+        pair = queryStringify(value, prefix ? `${prefix}[${enkey}]` : enkey);
+      } else {
+        pair = `${prefix ? `${prefix}[${enkey}]` : enkey}=${encodeURIComponent(value)}`;
+      }
+      pairs.push(pair);
+    }
+  }
+
+  return pairs.join('&');
+}
+
+/**
  * 请求方法
  *
  * @param {string} url
@@ -33,7 +70,8 @@ function curl(url, opts) {
 
   if (query) {
     if (typeof query !== 'string') {
-      opts.query = qs.stringify(query);
+      opts.query = queryStringify(query);
+      flatstr(opts.query);
     }
     opts.path = `${opts.path.split('?')[0]}?${opts.query}`;
     delete opts.query;
@@ -53,8 +91,9 @@ function curl(url, opts) {
         opts.body = JSON.stringify(body);
       } else {
         headers['content-type'] = headers['content-type'] || 'application/x-www-form-urlencoded';
-        opts.body = qs.stringify(body);
+        opts.body = queryStringify(body);
       }
+      flatstr(opts.body);
     }
 
     if (headers['content-length'] === undefined && headers['transfer-encoding'] === undefined) {

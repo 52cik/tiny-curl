@@ -29,8 +29,8 @@ test('sends strings', async (t) => {
 });
 
 test('sends plain objects as forms', async (t) => {
-  const { body } = await curl(s.url, { body: { such: 'wow' } });
-  t.is(body, 'such=wow');
+  const { body } = await curl(s.url, { body: { data: { such: ['w', 'o', 'w'] } } });
+  t.is(body, 'data[such][0]=w&data[such][1]=o&data[such][2]=w');
 });
 
 test('sends arrays as forms', async (t) => {
@@ -103,6 +103,11 @@ test('content-type header is not overriden when object in options.body', async (
 
 test('throws when json body is not a plain object or array', async (t) => {
   await t.throws(curl(`${s.url}`, { body: 'haha', json: true }), SyntaxError);
+});
+
+test('__proto__', async (t) => {
+  const { body } = await curl(s.url, { body: { such: 'wow', __proto__: { x: 1 } } });
+  t.is(body, 'such=wow');
 });
 
 test.after('cleanup', async () => {
