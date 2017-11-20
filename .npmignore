@@ -13,3 +13,9 @@ README.zh-CN.md
 rollup.config.js
 yarn.lock
 CNAME
+
+# independent nodejs environment
+.ine-versions
+/node
+/npm
+/npx
