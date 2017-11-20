@@ -115,7 +115,6 @@ function curl(url, opts) {
 
       if (!isBuffer) {
         encoding = encoding || 'utf8';
-        // res.setEncoding(encoding || 'utf8');
       }
 
       // 统一回复结果
@@ -160,7 +159,7 @@ function curl(url, opts) {
       });
     });
 
-    req.on('error', reject);
+    req.once('error', reject);
     req.end(opts.body);
   });
 }
@@ -175,7 +174,6 @@ curl.defaults = {
     'accept-encoding': 'gzip,deflate',
   },
   // encoding: 'utf8', // 输出编码类型
-  retries: 2, // 重定向
   decompress: true, // 解压缩
 };
 
